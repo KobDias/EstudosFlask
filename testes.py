@@ -12,24 +12,23 @@ def hello():
 
 @app.route("/tasks", methods=["POST"])
 def create_task(): # Função para criar uma nova tarefa
-    global task_id_control # Define que a variável é global para poder alterá-la dentro da função 
-    data = request.get_json()  # Pega os dados enviados no corpo da requisição
-    new_task = { # Cria um dicionário com os dados da nova tarefa
+    global task_id_control
+    data = request.get_json()
+    new_task = {
         "id": task_id_control, # ID único da tarefa
         "title": data.get("title"),  # Obtém o título enviado
         "description": data.get("description", ""),  # Descrição opcional
         "completed": False  # Define que a tarefa começa como incompleta
     }
     tasks.append(new_task)  # Adiciona a nova tarefa à lista
-    task_id_control += 1  # Incrementa o ID para a próxima tarefa
-    return jsonify({"message": "Tarefa criada com sucesso!", "task": new_task}), 201 # Retorna a nova tarefa criada
+    task_id_control += 1
+    return jsonify({"message": "Tarefa criada com sucesso!", "task": new_task}), 201
 @app.route("/tasks", methods=["GET"])
 def get_tasks():
     return jsonify({"tasks": tasks, "total": len(tasks)})
 
 @app.route("/tasks/<int:task_id>", methods=["GET"])
-def get_task(task_id):
-    # Procura a tarefa pelo ID
+def get_task(task_id): # tarefa por ID
     task = next((t for t in tasks if t["id"] == task_id), None)
     if not task:
         return jsonify({"message": "Tarefa não encontrada"}), 404
@@ -47,7 +46,7 @@ def update_task(task_id):
     task["completed"] = data.get("completed", task["completed"])
     return jsonify({"message": "Tarefa atualizada com sucesso!", "task": task})
 
-@app.route("/tasks/<int:task_id>", methods=["DELETE"])
+@app.route("/tasks/<int:task_id>", methods=["DELETE"]) # Metodo de deletar tarefas
 def delete_task(task_id):
     global tasks
     task = next((t for t in tasks if t["id"] == task_id), None)
